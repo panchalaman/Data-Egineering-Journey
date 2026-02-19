@@ -12,7 +12,7 @@ Hands-on projects to reinforce core data engineering concepts
 **Skills**: Complex joins, aggregations, analytical functions, data quality validation
 
 ### [2_WH_Mart_Build/](./EDA_2_highest_paying_skills.sql) - Data Pipeline - Data Warehouse & Mart
-![Data Pipeline Architecture](../Resources/images/1_2_Project2_Data_Pipeline.png)
+![Data Pipeline Architecture](SQL_COURSE/Projects/Resources/images/1_2_Project2_Data_Pipeline.png)
 >End-to-end ETL pipeline transforming raw CSV files into a star schema data warehouse and analytical data marts.
 
 **Skills**: Dimensional modeling, ETL pipeline development, data mart architecture, production practices
