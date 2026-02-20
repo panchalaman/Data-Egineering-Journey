@@ -44,6 +44,26 @@ INNER JOIN company_dim AS cd
 WHERE jpf.salary_year_avg IS NOT NULL
 ORDER BY jpf.salary_year_avg DESC
 LIMIT 10;
+/*
+
+┌─────────┬───────────────────────────┬─────────────────┬─────────────────────────────────────────────┐
+│ job_id  │      job_title_short      │ salary_year_avg │                company_name                 │
+│  int32  │          varchar          │     double      │                   varchar                   │
+├─────────┼───────────────────────────┼─────────────────┼─────────────────────────────────────────────┤
+│  296745 │ Data Scientist            │        960000.0 │ East River Electric Power Cooperative, Inc. │
+│ 1231950 │ Data Scientist            │        920000.0 │ Netflix                                     │
+│  673003 │ Senior Data Scientist     │        890000.0 │ MSP Staffing  LTD                           │
+│ 1575798 │ Machine Learning Engineer │        875000.0 │ KesarWeb                                    │
+│ 1007105 │ Data Scientist            │        870000.0 │ Goldman Tech Resourcing                     │
+│  856772 │ Data Scientist            │        850000.0 │ 3G HR SERVICES                              │
+│ 1443865 │ Senior Data Engineer      │        800000.0 │ Pure Storage                                │
+│ 1591743 │ Machine Learning Engineer │        800000.0 │ Health Information Systems Program          │
+│ 1574285 │ Data Scientist            │        680000.0 │ Netflix                                     │
+│  142665 │ Data Analyst              │        650000.0 │ Mantys                                      │
+├─────────┴───────────────────────────┴─────────────────┴─────────────────────────────────────────────┤
+│ 10 rows                                                                                   4 columns │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────┘
+*/
 
 -- The ON clause says HOW the tables connect.
 -- jpf.company_id = cd.company_id means "match rows where
@@ -65,6 +85,26 @@ FROM job_postings_fact AS jpf
 LEFT JOIN company_dim AS cd
     ON jpf.company_id = cd.company_id
 LIMIT 10;
+/*
+
+┌────────┬─────────────────────┬────────────────────────┐
+│ job_id │   job_title_short   │      company_name      │
+│ int32  │       varchar       │        varchar         │
+├────────┼─────────────────────┼────────────────────────┤
+│   4593 │ Data Analyst        │ Metasys Technologies   │
+│   4594 │ Data Analyst        │ Guidehouse             │
+│   4595 │ Data Analyst        │ Protask                │
+│   4596 │ Senior Data Analyst │ Atria Wealth Solutions │
+│   4597 │ Data Analyst        │ ICONMA, LLC            │
+│   4598 │ Data Analyst        │ Aquent                 │
+│   4599 │ Data Analyst        │ Adyen                  │
+│   4600 │ Data Analyst        │ Albertsons Companies   │
+│   4601 │ Senior Data Analyst │ Panda Restaurant Group │
+│   4602 │ Business Analyst    │ Diverse Lynx           │
+├────────┴─────────────────────┴────────────────────────┤
+│ 10 rows                                     3 columns │
+└───────────────────────────────────────────────────────┘
+*/
 
 -- LEFT JOIN is probably the one I use most. It's safe —
 -- you don't lose rows from your main table even if the
@@ -79,6 +119,14 @@ FROM job_postings_fact AS jpf
 LEFT JOIN company_dim AS cd
     ON jpf.company_id = cd.company_id
 WHERE cd.company_id IS NULL;
+/*
+┌────────┬───────────┬────────────┐
+│ job_id │ job_title │ company_id │
+│ int32  │  varchar  │   int32    │
+├────────┴───────────┴────────────┤
+│             0 rows              │
+└─────────────────────────────────┘
+*/
 -- This finds job postings whose company doesn't exist in
 -- the company table. Great for data quality checks.
 
@@ -98,6 +146,26 @@ FROM job_postings_fact AS jpf
 RIGHT JOIN company_dim AS cd
     ON jpf.company_id = cd.company_id
 LIMIT 10;
+/*
+
+┌────────┬─────────────────────┬────────────┬────────────────────────┐
+│ job_id │   job_title_short   │ company_id │      company_name      │
+│ int32  │       varchar       │   int32    │        varchar         │
+├────────┼─────────────────────┼────────────┼────────────────────────┤
+│   4593 │ Data Analyst        │       4593 │ Metasys Technologies   │
+│   4594 │ Data Analyst        │       4594 │ Guidehouse             │
+│   4595 │ Data Analyst        │       4595 │ Protask                │
+│   4596 │ Senior Data Analyst │       4596 │ Atria Wealth Solutions │
+│   4597 │ Data Analyst        │       4597 │ ICONMA, LLC            │
+│   4598 │ Data Analyst        │       4598 │ Aquent                 │
+│   4599 │ Data Analyst        │       4599 │ Adyen                  │
+│   4600 │ Data Analyst        │       4600 │ Albertsons Companies   │
+│   4601 │ Senior Data Analyst │       4601 │ Panda Restaurant Group │
+│   4602 │ Business Analyst    │       4602 │ Diverse Lynx           │
+├────────┴─────────────────────┴────────────┴────────────────────────┤
+│ 10 rows                                                  4 columns │
+└────────────────────────────────────────────────────────────────────┘
+*/
 
 -- Honestly, I rarely use RIGHT JOIN. You can always rewrite
 -- it as a LEFT JOIN by swapping the table order. Most people
@@ -119,7 +187,26 @@ FROM job_postings_fact AS jpf
 FULL OUTER JOIN company_dim AS cd
     ON jpf.company_id = cd.company_id
 LIMIT 10;
+/*
 
+┌────────┬─────────────────────┬────────────┬────────────────────────┐
+│ job_id │   job_title_short   │ company_id │      company_name      │
+│ int32  │       varchar       │   int32    │        varchar         │
+├────────┼─────────────────────┼────────────┼────────────────────────┤
+│   4593 │ Data Analyst        │       4593 │ Metasys Technologies   │
+│   4594 │ Data Analyst        │       4594 │ Guidehouse             │
+│   4595 │ Data Analyst        │       4595 │ Protask                │
+│   4596 │ Senior Data Analyst │       4596 │ Atria Wealth Solutions │
+│   4597 │ Data Analyst        │       4597 │ ICONMA, LLC            │
+│   4598 │ Data Analyst        │       4598 │ Aquent                 │
+│   4599 │ Data Analyst        │       4599 │ Adyen                  │
+│   4600 │ Data Analyst        │       4600 │ Albertsons Companies   │
+│   4601 │ Senior Data Analyst │       4601 │ Panda Restaurant Group │
+│   4602 │ Business Analyst    │       4602 │ Diverse Lynx           │
+├────────┴─────────────────────┴────────────┴────────────────────────┤
+│ 10 rows                                                  4 columns │
+└────────────────────────────────────────────────────────────────────┘
+*/
 -- FULL OUTER JOIN is great for finding mismatches between
 -- two tables — "what's in A but not B, and vice versa?"
 
@@ -163,6 +250,36 @@ INNER JOIN skills_job_dim AS sjd
 INNER JOIN skills_dim AS sd
     ON sjd.skill_id = sd.skill_id
 LIMIT 20;
+/*
+
+┌────────┬─────────────────────┬────────────┐
+│ job_id │   job_title_short   │ skill_name │
+│ int32  │       varchar       │  varchar   │
+├────────┼─────────────────────┼────────────┤
+│   4593 │ Data Analyst        │ sql        │
+│   4594 │ Data Analyst        │ sql        │
+│   4594 │ Data Analyst        │ python     │
+│   4594 │ Data Analyst        │ r          │
+│   4595 │ Data Analyst        │ sql        │
+│   4596 │ Senior Data Analyst │ sql        │
+│   4597 │ Data Analyst        │ sql        │
+│   4597 │ Data Analyst        │ python     │
+│   4599 │ Data Analyst        │ r          │
+│   4599 │ Data Analyst        │ python     │
+│   4599 │ Data Analyst        │ sql        │
+│   4600 │ Data Analyst        │ sql        │
+│   4600 │ Data Analyst        │ python     │
+│   4600 │ Data Analyst        │ r          │
+│   4604 │ Data Analyst        │ go         │
+│   4604 │ Data Analyst        │ python     │
+│   4604 │ Data Analyst        │ matlab     │
+│   4607 │ Data Analyst        │ sql        │
+│   4607 │ Data Analyst        │ crystal    │
+│   4610 │ Data Analyst        │ sql        │
+├────────┴─────────────────────┴────────────┤
+│ 20 rows                         3 columns │
+└───────────────────────────────────────────┘
+*/
 
 -- What happened:
 -- 1. Start with job_postings_fact
@@ -191,7 +308,36 @@ INNER JOIN skills_dim AS sd
 WHERE jpf.salary_year_avg IS NOT NULL
 ORDER BY jpf.salary_year_avg DESC
 LIMIT 20;
+/*
 
+┌────────┬───────────────────────┬─────────────────────────────────────────────┬────────────┬─────────────────┐
+│ job_id │    job_title_short    │                company_name                 │ skill_name │ salary_year_avg │
+│ int32  │        varchar        │                   varchar                   │  varchar   │     double      │
+├────────┼───────────────────────┼─────────────────────────────────────────────┼────────────┼─────────────────┤
+│ 296745 │ Data Scientist        │ East River Electric Power Cooperative, Inc. │ c++        │        960000.0 │
+│ 296745 │ Data Scientist        │ East River Electric Power Cooperative, Inc. │ java       │        960000.0 │
+│ 296745 │ Data Scientist        │ East River Electric Power Cooperative, Inc. │ r          │        960000.0 │
+│ 296745 │ Data Scientist        │ East River Electric Power Cooperative, Inc. │ python     │        960000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ docker     │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ linux      │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ keras      │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ plotly     │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ matplotlib │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ azure      │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ pyspark    │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ pandas     │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ pytorch    │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ databricks │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ java       │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ c#         │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ kubernetes │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ git        │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ sql        │        890000.0 │
+│ 673003 │ Senior Data Scientist │ MSP Staffing  LTD                           │ python     │        890000.0 │
+├────────┴───────────────────────┴─────────────────────────────────────────────┴────────────┴─────────────────┤
+│ 20 rows                                                                                           5 columns │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+*/
 
 -- ============================================================
 -- SELF JOIN
@@ -219,7 +365,30 @@ INNER JOIN (
 WHERE a.salary_year_avg IS NOT NULL
 ORDER BY diff_from_avg DESC
 LIMIT 10;
+/*
 
+┌─────────┬───────────────────────────┬────────────┬──────────────────┬───────────────┐
+│ job_id  │      job_title_short      │ job_salary │ title_avg_salary │ diff_from_avg │
+│  int32  │          varchar          │   double   │      double      │    double     │
+├─────────┼───────────────────────────┼────────────┼──────────────────┼───────────────┤
+│  296745 │ Data Scientist            │   960000.0 │         134324.0 │      825676.0 │
+│ 1231950 │ Data Scientist            │   920000.0 │         134324.0 │      785676.0 │
+│ 1575798 │ Machine Learning Engineer │   875000.0 │         137332.0 │      737668.0 │
+│ 1007105 │ Data Scientist            │   870000.0 │         134324.0 │      735676.0 │
+│  673003 │ Senior Data Scientist     │   890000.0 │         156391.0 │      733609.0 │
+│  856772 │ Data Scientist            │   850000.0 │         134324.0 │      715676.0 │
+│ 1591743 │ Machine Learning Engineer │   800000.0 │         137332.0 │      662668.0 │
+│ 1443865 │ Senior Data Engineer      │   800000.0 │         149222.0 │      650778.0 │
+│  142665 │ Data Analyst              │   650000.0 │          93223.0 │      556777.0 │
+│ 1574285 │ Data Scientist            │   680000.0 │         134324.0 │      545676.0 │
+├─────────┴───────────────────────────┴────────────┴──────────────────┴───────────────┤
+│ 10 rows                                                                   5 columns │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+*/
+-- This compares each job's salary to the average for that title.
+-- The subquery (aliased as b) calculates the average salary
+-- for each job title, and then we join it back to the main table
+-- to compare.
 
 -- ============================================================
 -- CROSS JOIN
@@ -237,6 +406,38 @@ SELECT
 FROM (SELECT DISTINCT job_title_short FROM job_postings_fact) AS titles
 CROSS JOIN (SELECT DISTINCT job_country FROM job_postings_fact LIMIT 5) AS locations
 LIMIT 20;
+/*
+
+┌───────────────────────────┬─────────────┐
+│      job_title_short      │ job_country │
+│          varchar          │   varchar   │
+├───────────────────────────┼─────────────┤
+│ Data Engineer             │ Ecuador     │
+│ Data Engineer             │ Argentina   │
+│ Data Engineer             │ Slovakia    │
+│ Data Engineer             │ Norway      │
+│ Data Engineer             │ New Zealand │
+│ Senior Data Analyst       │ Ecuador     │
+│ Senior Data Analyst       │ Argentina   │
+│ Senior Data Analyst       │ Slovakia    │
+│ Senior Data Analyst       │ Norway      │
+│ Senior Data Analyst       │ New Zealand │
+│ Machine Learning Engineer │ Ecuador     │
+│ Machine Learning Engineer │ Argentina   │
+│ Machine Learning Engineer │ Slovakia    │
+│ Machine Learning Engineer │ Norway      │
+│ Machine Learning Engineer │ New Zealand │
+│ Cloud Engineer            │ Ecuador     │
+│ Cloud Engineer            │ Argentina   │
+│ Cloud Engineer            │ Slovakia    │
+│ Cloud Engineer            │ Norway      │
+│ Cloud Engineer            │ New Zealand │
+├───────────────────────────┴─────────────┤
+│ 20 rows                       2 columns │
+└─────────────────────────────────────────┘
+*/
+-- CROSS JOIN is rarely used in data engineering, but it can
+-- be useful for generating combinations or doing certain types of analysis.
 
 
 -- ============================================================
