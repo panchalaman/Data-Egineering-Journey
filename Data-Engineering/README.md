@@ -12,6 +12,7 @@ The [SQL Lessons](SQL_COURSE/Lessons/) folder is a complete course that takes yo
 Every lesson uses a real dataset of tech job postings and is designed to run in DuckDB. Follow the [Setup Guide](SQL_COURSE/Lessons/00_Setup.md) to install DuckDB and connect to the database.
 
 → [Start the course](SQL_COURSE/Lessons/README.md)
+→ [Data 101 (University of California ): Notes](https://data101.org/notes/sql/review/)
 
 ## Projects
 
