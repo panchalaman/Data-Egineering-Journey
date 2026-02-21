@@ -58,6 +58,61 @@ DESCRIBE job_postings_fact;
 DESCRIBE company_dim;
 DESCRIBE skills_dim;
 DESCRIBE skills_job_dim;
+/*
+
+D DESCRIBE job_postings_fact;
+┌───────────────────────┬─────────────┬─────────┬─────────┬─────────┬─────────┐
+│      column_name      │ column_type │  null   │   key   │ default │  extra  │
+│        varchar        │   varchar   │ varchar │ varchar │ varchar │ varchar │
+├───────────────────────┼─────────────┼─────────┼─────────┼─────────┼─────────┤
+│ job_id                │ INTEGER     │ NO      │ PRI     │ NULL    │ NULL    │
+│ company_id            │ INTEGER     │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_title_short       │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_title             │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_location          │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_via               │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_schedule_type     │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_work_from_home    │ BOOLEAN     │ YES     │ NULL    │ NULL    │ NULL    │
+│ search_location       │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_posted_date       │ TIMESTAMP   │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_no_degree_mention │ BOOLEAN     │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_health_insurance  │ BOOLEAN     │ YES     │ NULL    │ NULL    │ NULL    │
+│ job_country           │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ salary_rate           │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ salary_year_avg       │ DOUBLE      │ YES     │ NULL    │ NULL    │ NULL    │
+│ salary_hour_avg       │ DOUBLE      │ YES     │ NULL    │ NULL    │ NULL    │
+├───────────────────────┴─────────────┴─────────┴─────────┴─────────┴─────────┤
+│ 16 rows                                                           6 columns │
+└─────────────────────────────────────────────────────────────────────────────┘
+D DESCRIBE company_dim;
+┌─────────────┬─────────────┬─────────┬─────────┬─────────┬─────────┐
+│ column_name │ column_type │  null   │   key   │ default │  extra  │
+│   varchar   │   varchar   │ varchar │ varchar │ varchar │ varchar │
+├─────────────┼─────────────┼─────────┼─────────┼─────────┼─────────┤
+│ company_id  │ INTEGER     │ NO      │ PRI     │ NULL    │ NULL    │
+│ name        │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ link        │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ link_google │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ thumbnail   │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+└─────────────┴─────────────┴─────────┴─────────┴─────────┴─────────┘
+D DESCRIBE skills_dim;
+┌─────────────┬─────────────┬─────────┬─────────┬─────────┬─────────┐
+│ column_name │ column_type │  null   │   key   │ default │  extra  │
+│   varchar   │   varchar   │ varchar │ varchar │ varchar │ varchar │
+├─────────────┼─────────────┼─────────┼─────────┼─────────┼─────────┤
+│ skill_id    │ INTEGER     │ NO      │ PRI     │ NULL    │ NULL    │
+│ skills      │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+│ type        │ VARCHAR     │ YES     │ NULL    │ NULL    │ NULL    │
+└─────────────┴─────────────┴─────────┴─────────┴─────────┴─────────┘
+D DESCRIBE skills_job_dim;
+┌─────────────┬─────────────┬─────────┬─────────┬─────────┬─────────┐
+│ column_name │ column_type │  null   │   key   │ default │  extra  │
+│   varchar   │   varchar   │ varchar │ varchar │ varchar │ varchar │
+├─────────────┼─────────────┼─────────┼─────────┼─────────┼─────────┤
+│ skill_id    │ INTEGER     │ NO      │ PRI     │ NULL    │ NULL    │
+│ job_id      │ INTEGER     │ NO      │ PRI     │ NULL    │ NULL    │
+└─────────────┴─────────────┴─────────┴─────────┴─────────┴─────────┘
+*/
 
 
 -- ============================================================
