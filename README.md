@@ -156,6 +156,7 @@ Data-Engineering-Journey/
 │       ├── 03_data_type_exploration.sql         # CAST, type analysis, source inspection
 │       ├── 04_initial_load.sql                  # Full load — CREATE + INSERT INTO
 │       ├── 05_incremental_refresh.sql           # Upsert — UPDATE changed + INSERT new
+│       ├── 06_merge_refresh.sql                 # MERGE INTO — atomic upsert + deletes
 │       ├── run_pipeline.sh                      # One-command pipeline execution
 │       └── README.md
 ```

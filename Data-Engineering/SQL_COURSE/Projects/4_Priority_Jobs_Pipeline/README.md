@@ -20,11 +20,11 @@ This isn't a massive data platform. It's a focused exercise in the fundamentals 
 
 ```
 MotherDuck (read-only)                    jobs_mart (local, writable)
-┌─────────────────────┐                   ┌──────────────────────────┐
-│ job_postings_fact    │──┐               │ staging.                 │
-│ company_dim          │  │   JOIN +      │   priority_roles         │
-│ skills_dim           │  ├──────────────►│     (config table)       │
-│ skills_job_dim       │  │   INSERT      │                          │
+┌─────────────────────┐                  ┌──────────────────────────┐
+│ job_postings_fact   │──┐               │ staging.                 │
+│ company_dim         │  │   JOIN +      │   priority_roles          │
+│ skills_dim          │  ├──────────────►│     (config table)       │
+│ skills_job_dim      │  │   INSERT      │                          │
 └─────────────────────┘  │               │ main.                    │
                          └──────────────►│   priority_jobs_snapshot  │
                                          │     (production table)    │
@@ -41,11 +41,12 @@ MotherDuck (read-only)                    jobs_mart (local, writable)
 ├── 03_data_type_exploration.sql     # Understand source data types
 ├── 04_initial_load.sql              # Full load — create & populate snapshot
 ├── 05_incremental_refresh.sql       # Upsert — update changed, insert new
+├── 06_merge_refresh.sql             # MERGE INTO — single-statement upsert + deletes
 ├── run_pipeline.sh                  # Run everything in one command
 └── README.md                        # You're reading it
 ```
 
-Run order: `01` → `02` → `04` (initial), then `05` for refreshes. Scripts `02b` and `03` are learning references — you don't need them for the pipeline to work.
+Run order: `01` → `02` → `04` (initial), then `05` or `06` for refreshes. Script `06` is the better approach — it uses MERGE INTO to handle updates, inserts, AND deletes in one atomic statement. Script `05` shows the manual UPDATE+INSERT pattern for comparison. Scripts `02b` and `03` are learning references — you don't need them for the pipeline to work.
 
 ## How to Run
 
@@ -60,8 +61,9 @@ duckdb md:data_jobs
 .read Data-types/4_Priority_Jobs_Pipeline/02_create_priority_roles.sql
 .read Data-types/4_Priority_Jobs_Pipeline/04_initial_load.sql
 
-# Later, to refresh:
-.read Data-types/4_Priority_Jobs_Pipeline/05_incremental_refresh.sql
+# Later, to refresh (pick one):
+.read Data-types/4_Priority_Jobs_Pipeline/05_incremental_refresh.sql   # UPDATE+INSERT approach
+.read Data-types/4_Priority_Jobs_Pipeline/06_merge_refresh.sql         # MERGE INTO (recommended)
 ```
 
 ### Option B: Run the whole pipeline
@@ -93,9 +95,11 @@ SELECT ... FROM source_data;
 
 Sounds obvious in hindsight. Took me an embarrassingly long time to spot it.
 
-### The Upsert Pattern
+### The Upsert Pattern (Two Approaches)
 
-Production ETL doesn't rebuild tables from scratch every run. It uses upsert:
+Production ETL doesn't rebuild tables from scratch every run. It uses upsert. I built two versions to understand the progression:
+
+**Script 05 — UPDATE + INSERT (the manual way):**
 
 ```sql
 -- 1. Stage fresh data in a temp table
@@ -114,7 +118,24 @@ FROM src LEFT JOIN target ON src.id = target.id
 WHERE target.id IS NULL;
 ```
 
-The `IS DISTINCT FROM` part is subtle but important — regular `!=` doesn't handle NULLs correctly, which means changed rows get silently skipped.
+**Script 06 — MERGE INTO (the production way):**
+
+```sql
+MERGE INTO target AS tgt
+USING source AS src
+ON tgt.id = src.id
+
+WHEN MATCHED AND tgt.col IS DISTINCT FROM src.col
+    THEN UPDATE SET col = src.col
+
+WHEN NOT MATCHED
+    THEN INSERT VALUES (src.*)
+
+WHEN NOT MATCHED BY SOURCE
+    THEN DELETE;
+```
+
+MERGE is strictly better: one atomic statement, one pass through the data, and it handles deletes (stale rows from removed roles get cleaned up automatically). The `IS DISTINCT FROM` operator matters in both — regular `!=` doesn't handle NULLs correctly, which means changed rows get silently skipped.
 
 ### Schema Evolution
 
@@ -147,7 +168,7 @@ Output table (local, writable):
 If I were extending this into a real pipeline:
 
 - **Add more roles** — the priority_roles table is just 3 rows. Easy to expand.
-- **Schedule it** — wrap the refresh script in a cron job or Airflow DAG.
+- **Schedule it** — wrap the MERGE refresh script in a cron job or Airflow DAG.
 - **Add data quality checks** — row count assertions, null checks, duplicate detection.
 - **Track history** — add a `snapshot_date` column to keep historical snapshots instead of overwriting.
 - **Alerting** — notify when high-priority roles spike in postings (market signal).

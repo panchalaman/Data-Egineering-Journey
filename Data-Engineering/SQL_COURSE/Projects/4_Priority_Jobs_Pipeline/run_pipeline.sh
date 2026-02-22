@@ -26,8 +26,11 @@ duckdb md:data_jobs < "${PIPELINE_DIR}/02_create_priority_roles.sql"
 echo "[3/4] running initial load..."
 duckdb md:data_jobs < "${PIPELINE_DIR}/04_initial_load.sql"
 
-echo "[4/4] running incremental refresh (to verify upsert works)..."
+echo "[4/5] running incremental refresh (UPDATE+INSERT pattern)..."
 duckdb md:data_jobs < "${PIPELINE_DIR}/05_incremental_refresh.sql"
 
+echo "[5/5] running MERGE refresh (single-statement upsert)..."
+duckdb md:data_jobs < "${PIPELINE_DIR}/06_merge_refresh.sql"
+
 echo ""
-echo "=== Pipeline complete ==="
+echo "=== Pipeline complete (5 steps) ==="
