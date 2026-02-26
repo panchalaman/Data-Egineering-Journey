@@ -16,6 +16,16 @@
 SELECT
     CURRENT_DATE AS today,
     CURRENT_TIMESTAMP AS right_now;
+/*
+
+┌────────────┬───────────────────────────────┐
+│   today    │           right_now           │
+│    date    │   timestamp with time zone    │
+├────────────┼───────────────────────────────┤
+│ 2026-02-27 │ 2026-02-27 00:12:10.247251+01 │
+└────────────┴───────────────────────────────┘
+
+*/
 
 
 -- DATE_TRUNC — Round Down to a Time Period
@@ -29,6 +39,23 @@ SELECT
     DATE_TRUNC('year', job_posted_date) AS posted_year
 FROM job_postings_fact
 LIMIT 5;
+/*
+
+┌─────────────────────┬──────────────┬────────────────┬─────────────┐
+│   job_posted_date   │ posted_month │ posted_quarter │ posted_year │
+│      timestamp      │     date     │      date      │    date     │
+├─────────────────────┼──────────────┼────────────────┼─────────────┤
+│ 2023-01-01 00:00:04 │ 2023-01-01   │ 2023-01-01     │ 2023-01-01  │
+│ 2023-01-01 00:00:22 │ 2023-01-01   │ 2023-01-01     │ 2023-01-01  │
+│ 2023-01-01 00:00:24 │ 2023-01-01   │ 2023-01-01     │ 2023-01-01  │
+│ 2023-01-01 00:00:27 │ 2023-01-01   │ 2023-01-01     │ 2023-01-01  │
+│ 2023-01-01 00:00:38 │ 2023-01-01   │ 2023-01-01     │ 2023-01-01  │
+└─────────────────────┴──────────────┴────────────────┴─────────────┘
+
+*/
+-- This is how I built the date dimension in Project 3. It allows me to group by month or quarter without extra date math. It also
+-- gives me nice labels like "2023-Q1" for charts and dashboards.
+
 
 -- Real use: monthly job posting trends
 SELECT
@@ -37,7 +64,48 @@ SELECT
 FROM job_postings_fact
 GROUP BY DATE_TRUNC('month', job_posted_date)
 ORDER BY month;
+/*
 
+┌────────────┬─────────────┐
+│   month    │ jobs_posted │
+│    date    │    int64    │
+├────────────┼─────────────┤
+│ 2023-01-01 │       91872 │
+│ 2023-02-01 │       64475 │
+│ 2023-03-01 │       64209 │
+│ 2023-04-01 │       62937 │
+│ 2023-05-01 │       52042 │
+│ 2023-06-01 │       61545 │
+│ 2023-07-01 │       63760 │
+│ 2023-08-01 │       75236 │
+│ 2023-09-01 │       62363 │
+│ 2023-10-01 │       66732 │
+│ 2023-11-01 │       64385 │
+│ 2023-12-01 │       57800 │
+│ 2024-01-01 │       53145 │
+│ 2024-02-01 │       55272 │
+│ 2024-03-01 │       48442 │
+│ 2024-04-01 │       43755 │
+│ 2024-05-01 │       45555 │
+│ 2024-06-01 │       41727 │
+│ 2024-07-01 │       51152 │
+│ 2024-08-01 │       47748 │
+│ 2024-09-01 │       30215 │
+│ 2024-10-01 │       19052 │
+│ 2024-11-01 │       13779 │
+│ 2024-12-01 │       34117 │
+│ 2025-01-01 │       67650 │
+│ 2025-02-01 │       84548 │
+│ 2025-03-01 │       73505 │
+│ 2025-04-01 │       44880 │
+│ 2025-05-01 │       40404 │
+│ 2025-06-01 │       33628 │
+├────────────┴─────────────┤
+│ 30 rows        2 columns │
+└──────────────────────────┘
+
+*/
+-- This is a common pattern in data engineering: use DATE_TRUNC to group by time periods without worrying about the specific date math. It also gives you nice, clean date values to work with in downstream queries and dashboards.    
 
 -- EXTRACT — Pull Out Date Parts
 SELECT
@@ -49,6 +117,21 @@ SELECT
     -- 0=Sunday, 1=Monday, ..., 6=Saturday
 FROM job_postings_fact
 LIMIT 5;
+/*
+
+┌─────────────────────┬───────┬───────┬───────┬─────────────┐
+│   job_posted_date   │ year  │ month │  day  │ day_of_week │
+│      timestamp      │ int64 │ int64 │ int64 │    int64    │
+├─────────────────────┼───────┼───────┼───────┼─────────────┤
+│ 2023-01-01 00:00:04 │  2023 │     1 │     1 │           0 │
+│ 2023-01-01 00:00:22 │  2023 │     1 │     1 │           0 │
+│ 2023-01-01 00:00:24 │  2023 │     1 │     1 │           0 │
+│ 2023-01-01 00:00:27 │  2023 │     1 │     1 │           0 │
+│ 2023-01-01 00:00:38 │  2023 │     1 │     1 │           0 │
+└─────────────────────┴───────┴───────┴───────┴─────────────┘
+
+*/
+-- This is how I built the date dimension in Project 3. It allows me to group by month or quarter without extra date math. It also gives me nice labels like "2023-Q1" for charts and dashboards.
 
 -- Which day of the week gets the most postings?
 SELECT
@@ -66,6 +149,23 @@ SELECT
 FROM job_postings_fact
 GROUP BY day_of_week
 ORDER BY day_of_week;
+/*
+
+┌─────────────┬───────────┬───────────┐
+│ day_of_week │ day_name  │ job_count │
+│    int64    │  varchar  │   int64   │
+├─────────────┼───────────┼───────────┤
+│           0 │ Sunday    │    163698 │
+│           1 │ Monday    │    229040 │
+│           2 │ Tuesday   │    263832 │
+│           3 │ Wednesday │    261925 │
+│           4 │ Thursday  │    261468 │
+│           5 │ Friday    │    255544 │
+│           6 │ Saturday  │    180423 │
+└─────────────┴───────────┴───────────┘
+
+*/
+-- Interesting! Tuesday and Wednesday are the most popular days for job postings, while Sunday is the least popular. This could be useful for timing your job search or understanding hiring patterns.
 
 
 -- DATE_DIFF — Time Between Dates (DuckDB syntax)
