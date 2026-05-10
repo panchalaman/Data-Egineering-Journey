@@ -25,6 +25,7 @@ This repo is organized into two main learning tracks:
 | 2 | [**Data Warehouse & Mart Build**](./Data-Engineering/SQL_COURSE/Projects/2_WH_Mart_Build/) | I can build a full ETL pipeline — extract CSVs from cloud storage, normalize into a star schema, create four specialized marts, and maintain them with MERGE |
 | 3 | [**Flat-to-Warehouse Transformation**](./Data-Engineering/SQL_COURSE/Projects/3_Flat_to_WH_Build/) | I can take genuinely messy source data (Python list strings in a CSV) and transform it into a clean star schema with parsed dimensions and bridge tables |
 | 4 | [**Priority Jobs Pipeline**](./Data-types/4_Priority_Jobs_Pipeline/) | I can build incremental ETL pipelines with staging, upsert patterns, schema evolution, and proper data type handling |
+| 5 | [**E-Commerce Analytics**](./Projects/ecom-analytics/) | I can build an end-to-end batch pipeline orchestrating PySpark, PostgreSQL, dbt, and Streamlit, complete with fact table partitioning and analytics-grade testing |
 
 Plus a [**SQL Lessons**](./Data-Engineering/SQL_COURSE/Lessons/) — a complete 15-lesson course covering SQL from scratch through advanced data engineering patterns (window functions, star schema design, ETL pipelines, query optimization).
 
@@ -159,6 +160,14 @@ Data-Engineering-Journey/
 │       ├── 06_merge_refresh.sql                 # MERGE INTO — atomic upsert + deletes
 │       ├── run_pipeline.sh                      # One-command pipeline execution
 │       └── README.md
+│
+├── Projects/
+│   └── ecom-analytics/                          ← Project 5: E-Commerce Analytics
+│       ├── airflow/                             # Optional Airflow orchestration
+│       ├── dashboard/                           # Streamlit dashboard app
+│       ├── dbt/                                 # 10 dbt models + 27 tests
+│       ├── scripts/                             # Data extraction and Postgres loading
+│       └── spark/                               # PySpark enrichment tasks
 ```
 
 ---
@@ -243,17 +252,33 @@ This one started as practice with DDL/DML commands and turned into a proper pipe
 
 ---
 
+### Project 5 — E-Commerce Analytics
+
+**The question:** *How to build an end-to-end batch pipeline running fully local with open-source tools?*
+
+I built this capstone project to process the Olist Brazilian E-Commerce dataset. It ingests 9 raw CSV files, joins them using PySpark, loads them into a partitioned local PostgreSQL database, transforms them with dbt into 10 analytics-ready models, and serves a Streamlit dashboard.
+
+**Key technical highlights:**
+- Local-first architecture (PySpark → Postgres → dbt → Streamlit)
+- `PARTITION BY RANGE` and btree indexing for warehouse performance mirroring BigQuery clustering
+- Comprehensive dbt data modeling (10 models) and testing (27 unique tests)
+- Option to orchestrate via Airflow and Docker Compose, or manual execution via Makefiles
+
+→ [**Explore Project 5**](./Projects/ecom-analytics/)
+
+---
+
 ## Technical Skills Demonstrated
 
 ### Data Engineering Core
 
 | Category | Skills |
 |----------|--------|
-| **Data Modeling** | Star schema design, dimensional modeling, fact/dimension/bridge tables, grain definition, additive measures |
-| **ETL Development** | Extract from cloud storage (GCS), transform with SQL, load into warehouse, incremental updates with MERGE |
-| **Data Marts** | Flat marts, time-series marts, priority tracking marts, company analytics marts |
-| **Data Quality** | Idempotent scripts, verification queries, NULL handling, deduplication, type safety |
-| **Pipeline Orchestration** | Master build scripts (SQL + Shell), error handling, sequential step execution |
+| **Data Modeling** | Star schema design, dimensional modeling, fact/dimension/bridge tables, grain definition, additive measures, dbt modeling |
+| **ETL Development** | Extract from cloud storage (GCS), transform with SQL/PySpark, load into warehouse, incremental updates with MERGE |
+| **Data Marts** | Flat marts, time-series marts, priority tracking marts, company analytics marts, partitioned fact tables |
+| **Data Quality** | Idempotent scripts, verification queries, NULL handling, deduplication, type safety, dbt tests |
+| **Pipeline Orchestration** | Master build scripts (SQL + Shell), error handling, sequential step execution, Airflow DAGs |
 
 ### SQL Proficiency
 
@@ -270,12 +295,13 @@ This one started as practice with DDL/DML commands and turned into a proper pipe
 
 | Tool | Usage |
 |------|-------|
-| **DuckDB** | OLAP query engine for all analytical workloads |
+| **DuckDB / PostgreSQL** | OLAP query engines and database storage for analytical workloads |
 | **Google Cloud Storage** | Source data hosting and cloud extraction |
 | **Git / GitHub** | Version-controlled pipeline scripts |
 | **VS Code** | SQL development environment |
 | **Docker / Docker Compose** | Containerized pipelines, multi-service setups, CI/CD |
 | **Shell (Bash/Zsh)** | Pipeline automation and orchestration |
+| **PySpark & dbt** | Batch transformations, data enrichment and analytics modeling |
 
 ---
 
