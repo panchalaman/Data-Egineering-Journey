@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: dim_product
+    description: "Product category dimension — order volume and revenue stats per category"
+    columns:
+      - name: product_category_name_english
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_customer
+    description: "Customer dimension — order and revenue stats by state and city"
+    columns:
+      - name: customer_state
+        tests:
+          - not_null
+
+  - name: dim_seller
+    description: "Seller dimension — sales stats per seller"
+    columns:
+      - name: seller_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    description: "Calendar dimension derived from order purchase dates"
+    columns:
+      - name: date_key
+        tests:
+          - unique
+          - not_null

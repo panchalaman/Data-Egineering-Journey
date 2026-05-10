@@ -1,0 +1,106 @@
+version: "3.9"
+
+x-airflow-common:
+  &airflow-common
+  build:
+    context: ./airflow
+    dockerfile: Dockerfile
+  environment:
+    &airflow-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__WEBSERVER__SECRET_KEY: 'olist-pipeline-secret'
+    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
+    S3_BUCKET: ${S3_BUCKET}
+    PG_HOST: ${PG_HOST}
+    PG_PORT: ${PG_PORT:-5432}
+    PG_USER: ${PG_USER}
+    PG_PASSWORD: ${PG_PASSWORD}
+    PG_DB: ${PG_DB:-olist}
+    PG_RAW_SCHEMA: ${PG_RAW_SCHEMA:-olist_raw}
+    PG_PROD_SCHEMA: ${PG_PROD_SCHEMA:-olist_prod}
+    KAGGLE_API_TOKEN: ${KAGGLE_API_TOKEN}
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./scripts:/opt/airflow/project/scripts
+    - ./spark:/opt/airflow/project/spark
+    - ./dbt:/opt/airflow/project/dbt
+    - ./data:/opt/airflow/project/data
+    - airflow-logs:/opt/airflow/logs
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  airflow-init:
+    <<: *airflow-common
+    command: >
+      bash -c "
+        airflow db upgrade &&
+        airflow users create
+          --username admin
+          --password admin
+          --firstname Admin
+          --lastname User
+          --role Admin
+          --email admin@example.com
+      "
+    restart: "no"
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    restart: always
+
+  dbt:
+    build:
+      context: ./dbt
+      dockerfile: Dockerfile
+    volumes:
+      - ./dbt:/usr/app/dbt
+    environment:
+      - PG_HOST=${PG_HOST}
+      - PG_PORT=${PG_PORT:-5432}
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_DB=${PG_DB:-olist}
+      - PG_PROD_SCHEMA=${PG_PROD_SCHEMA:-olist_prod}
+      - PG_RAW_SCHEMA=${PG_RAW_SCHEMA:-olist_raw}
+    working_dir: /usr/app/dbt
+    entrypoint: ["dbt"]
+    command: ["run", "--project-dir", ".", "--profiles-dir", "."]
+
+volumes:
+  postgres-data:
+  airflow-logs:
+

@@ -1,0 +1,36 @@
+# Environment
+.env
+
+# Python
+*.pyc
+__pycache__/
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Data (never commit raw/processed data)
+data/source/
+data/raw/
+data/processed/
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# GCP credentials
+keys/*.json
+!keys/.gitkeep
+
+# Terraform
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/terraform.tfvars
+terraform/.terraform.lock.hcl
+
+# IDE
+.vscode/
+.idea/

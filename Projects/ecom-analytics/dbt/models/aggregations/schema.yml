@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: agg_monthly_orders
+    description: "Monthly order volume, revenue, and delivery performance trend"
+    columns:
+      - name: year_month
+        tests:
+          - unique
+          - not_null
+      - name: total_orders
+        tests:
+          - not_null
+
+  - name: agg_category_performance
+    description: "Product category performance — revenue, order count, review scores"
+    columns:
+      - name: product_category_name_english
+        tests:
+          - unique
+          - not_null
+
+  - name: agg_delivery_performance
+    description: "Delivery performance by customer state — on-time rate and delivery days"
+    columns:
+      - name: customer_state
+        tests:
+          - unique
+          - not_null
+
+  - name: agg_payment_analysis
+    description: "Payment method breakdown — volume, revenue, and average order value"
+    columns:
+      - name: payment_type
+        tests:
+          - unique
+          - not_null

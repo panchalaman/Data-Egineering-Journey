@@ -1,0 +1,13 @@
+ecommerce_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('PG_HOST') }}"
+      user: "{{ env_var('PG_USER') }}"
+      password: "{{ env_var('PG_PASSWORD') }}"
+      port: "{{ env_var('PG_PORT', '5432') | int }}"
+      dbname: "{{ env_var('PG_DB', 'olist') }}"
+      schema: "{{ env_var('PG_PROD_SCHEMA', 'olist_prod') }}"
+      threads: 4
+      sslmode: "{{ env_var('PG_SSLMODE', 'disable') }}"

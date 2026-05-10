@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: >
+      Order item fact table — one row per order item with surrogate key.
+      Indexed on order_purchase_date for time-range query efficiency and on
+      customer_state + product_category_name_english for geography and category
+      filter performance — the PostgreSQL equivalents of partitioning and clustering.
+    tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "price >= 0"
+          config:
+            severity: warn
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "total_item_value >= 0"
+          config:
+            severity: warn
+    columns:
+      - name: order_item_key
+        tests:
+          - unique
+          - not_null
+      - name: order_purchase_date
+        tests:
+          - not_null
+      - name: customer_state
+        tests:
+          - not_null
+      - name: total_item_value
+        tests:
+          - not_null:
+              config:
+                severity: warn

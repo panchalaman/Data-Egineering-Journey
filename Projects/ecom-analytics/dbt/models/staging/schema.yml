@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: olist_raw
+    database: "{{ env_var('PG_DB', 'olist') }}"
+    schema: "{{ env_var('PG_RAW_SCHEMA', 'olist_raw') }}"
+    tables:
+      - name: orders_enriched
+        description: >
+          Denormalized Olist orders produced by PySpark. Grain: one row per order item.
+          PARTITION BY RANGE(order_purchase_date), INDEX on customer_state and
+          product_category_name_english for optimal query performance.
+
+models:
+  - name: stg_orders
+    description: "Cleaned and typed Olist orders from the raw layer (one row per order item)"
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: order_purchase_date
+        tests:
+          - not_null
+      - name: customer_state
+        tests:
+          - not_null
+      - name: total_item_value
+        tests:
+          - not_null:
+              config:
+                severity: warn
