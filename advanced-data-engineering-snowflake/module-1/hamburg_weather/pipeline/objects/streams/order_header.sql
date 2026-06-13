@@ -1,0 +1,1 @@
+CREATE OR REPLACE STREAM {{env}}_tasty_bytes.raw_pos.order_header_stream ON TABLE {{env}}_tasty_bytes.raw_pos.order_header;
